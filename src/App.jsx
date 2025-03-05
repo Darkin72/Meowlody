@@ -1,9 +1,9 @@
 import { useState } from "react";
-import HomeScreen from "./HomeScreen.jsx";
-import LibraryScreen from "./LibraryScreen.jsx";
-import FavouritesScreen from "./FavouritesScreen.jsx";
-import PlaylistScreen from "./PlaylistScreen.jsx";
-import HistoryScreen from "./HistoryScreen.jsx";
+import HomeScreen from "./Screens/HomeScreen.jsx";
+import LibraryScreen from "./Screens/LibraryScreen.jsx";
+import FavouritesScreen from "./Screens/FavouritesScreen.jsx";
+import PlaylistScreen from "./Screens/PlaylistScreen.jsx";
+import HistoryScreen from "./Screens/HistoryScreen.jsx";
 function App() {
   const [mainScreen, setMainScreen] = useState("home");
   const [userName, setUserName] = useState("");
