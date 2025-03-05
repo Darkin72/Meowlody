@@ -15,10 +15,10 @@ function HomeScreen({ userName = "", setMainScreen, setUserName }) {
             <LoginFormEnd setForm={setForm} />
           </>
         ) : (
-          <div>
+          <>
             <RegisterForm setUserName={setUserName} />
             <RegisterFormEnd setForm={setForm} />
-          </div>
+          </>
         )
       ) : (
         <div className="flex flex-row">
