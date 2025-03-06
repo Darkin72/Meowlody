@@ -1,26 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 
-const Dropdown = ({ buttonLabel, options, isHovered, onOpenChange, onOptionClick }) => {
+const Dropdown = ({ buttonLabel, isHovered, onOpenChange, onOptionClick }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Hàm để lấy icon tương ứng cho mỗi option
-  const getOptionIcon = (option) => {
-    switch (option) {
-      case "Add to playlist":
-        return "fa-solid fa-plus";
-      case "Properties":
-        return "fa-solid fa-circle-info";
-      case "Delete":
-        return "fa-solid fa-trash";
-      case "Play next":
-        return "fa-solid fa-forward-step";
-      case "Add to queue":
-        return "fa-solid fa-list-ol";
-      default:
-        return null;
-    }
-  };
+  const options = [
+    ["Play next", "fa-solid fa-forward-step"],
+    ["Add to queue", "fa-solid fa-list-ol"],
+    ["Add to playlist", "fa-solid fa-plus"],
+    ["Properties", "fa-solid fa-circle-info"],
+    ["Download", "fa-solid fa-download"],
+    ["Delete", "fa-solid fa-trash"],
+  ];
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -29,7 +20,6 @@ const Dropdown = ({ buttonLabel, options, isHovered, onOpenChange, onOptionClick
         if (onOpenChange) onOpenChange(false);
       }
     };
-
 
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
@@ -62,18 +52,15 @@ const Dropdown = ({ buttonLabel, options, isHovered, onOpenChange, onOptionClick
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 z-10 mt-2 w-48 rounded-md border border-gray-500 bg-gray-800 shadow-lg">
-          {options.map((option, index) => {
-            const iconClass = getOptionIcon(option);
+        <div className="absolute right-0 z-50 mt-2 w-48 rounded-md border border-gray-500 bg-gray-800 shadow-lg">
+          {options.map(([option, icon], index) => {
             return (
               <button
                 key={index}
                 onClick={() => handleOptionClick(option)}
                 className="block w-full px-4 py-2 text-left text-white hover:bg-gray-700"
               >
-                {iconClass && (
-                  <i className={`${iconClass} mr-2 w-5 text-center`}></i>
-                )}
+                <i className={`${icon} mr-2 w-5 text-center`}></i>
                 {option}
               </button>
             );

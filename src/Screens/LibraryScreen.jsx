@@ -61,14 +61,6 @@ function Table({ data, setData }) {
 
   const samplePlaylists = getPlaylists();
 
-  const dropdownOptions = [
-    "Play next",
-    "Add to queue",
-    "Add to playlist",
-    "Properties",
-    "Delete",
-  ];
-
   const isRowActive = (index) => {
     return (hoverNumber === index && isHovered) || activeDropdownRow === index;
   };
@@ -198,7 +190,6 @@ function Table({ data, setData }) {
                   <Dropdown
                     className="text-white"
                     buttonLabel="..."
-                    options={dropdownOptions}
                     isHovered={isRowActive(index)}
                     onOpenChange={(isOpen) =>
                       handleDropdownOpenChange(isOpen, index)

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Dropdown from "../Components/Dropdown";
 import GetData from "../Database/GetData";
+import ModalComponent from "../Components/Modal";
 import { SongPropertiesModal, AddToPlaylistModal } from "../Components/Modal";
 import { getPlaylists } from "../Database/GetData";
 
@@ -49,17 +50,9 @@ function Table({ data, setData }) {
   const [selectedSong, setSelectedSong] = useState(null);
   const [isPropertiesModalOpen, setIsPropertiesModalOpen] = useState(false);
   const [isPlaylistModalOpen, setIsPlaylistModalOpen] = useState(false);
+  const [isTestModalOpen, setIsTestModalOpen] = useState(false);
 
   const samplePlaylists = getPlaylists();
-
-  // Danh sách các tùy chọn cho dropdown
-  const dropdownOptions = [
-    "Play next",
-    "Add to queue",
-    "Add to playlist",
-    "Properties",
-    "Delete",
-  ];
 
   const isRowActive = (index) => {
     return (hoverNumber === index && isHovered) || activeDropdownRow === index;
@@ -76,8 +69,10 @@ function Table({ data, setData }) {
     switch (option) {
       case "Play next":
         // Xử lý phát bài hát tiếp theo
+        console.log(isTestModalOpen);
         console.log(`Playing next: ${row.title}`);
         // Thêm logic xử lý phát bài hát tiếp theo ở đây
+        setIsTestModalOpen(true);
         break;
       case "Add to queue":
         // Xử lý thêm vào hàng đợi
@@ -99,7 +94,7 @@ function Table({ data, setData }) {
         setData((prevData) => prevData.filter((item) => item.id !== row.id));
         break;
       default:
-        console.log(`Unhandled option: ${option}`);
+        break;
     }
   };
 
@@ -189,9 +184,8 @@ function Table({ data, setData }) {
 
                 <td>
                   <Dropdown
-                    className="text-white"
+                    className="z-50 text-white"
                     buttonLabel="..."
-                    options={dropdownOptions}
                     isHovered={isRowActive(index)}
                     onOpenChange={(isOpen) =>
                       handleDropdownOpenChange(isOpen, index)
@@ -204,14 +198,12 @@ function Table({ data, setData }) {
         </tbody>
       </table>
 
-      {/* Modal hiển thị thông tin chi tiết bài hát */}
       <SongPropertiesModal
         isOpen={isPropertiesModalOpen}
         onClose={() => setIsPropertiesModalOpen(false)}
         song={selectedSong}
       />
 
-      {/* Modal thêm bài hát vào playlist */}
       <AddToPlaylistModal
         isOpen={isPlaylistModalOpen}
         onClose={() => setIsPlaylistModalOpen(false)}
