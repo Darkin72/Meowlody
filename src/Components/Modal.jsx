@@ -1,5 +1,8 @@
 import React from "react";
 import Modal from "react-modal";
+import Loading from "./Loading";
+import { useState, useEffect } from "react";
+import { getPlaylists } from "../Database/GetData";
 
 Modal.setAppElement("#root");
 
@@ -37,7 +40,6 @@ function ModalComponent({ isOpen, onClose, title, children, actionButton }) {
 
 export function SongPropertiesModal({ isOpen, onClose, song }) {
   if (!song) return null;
-
   return (
     <ModalComponent isOpen={isOpen} onClose={onClose} title="Properties">
       <div className="m-8 grid grid-cols-2 gap-[20px]">
@@ -80,14 +82,42 @@ export function SongPropertiesModal({ isOpen, onClose, song }) {
   );
 }
 
-export function AddToPlaylistModal({
-  isOpen,
-  onClose,
-  song,
-  playlists,
-  onAddToPlaylist,
-}) {
-  if (!song) return null;
+export function AddToPlaylistModal({ isOpen, onClose, song, onAddToPlaylist }) {
+  const [playlists, setPlaylists] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!isOpen || !song) return;
+
+    const controller = new AbortController();
+
+    const fetchPlaylists = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const fetchedPlaylists = await getPlaylists({
+          signal: controller.signal,
+        });
+        setPlaylists(fetchedPlaylists || []);
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setError("Cannot fetch playlists");
+          console.error("CANNOT FETCH DATA", error);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchPlaylists();
+
+    return () => controller.abort();
+  }, [isOpen, song]);
+
+  if (!isOpen || !song) return null;
 
   return (
     <ModalComponent isOpen={isOpen} onClose={onClose} title="Add to playlist">
@@ -95,34 +125,40 @@ export function AddToPlaylistModal({
         <p className="mb-2">
           Choose playlist to add: <strong>{song.title}</strong>
         </p>
-
-        <div className="mt-4 max-h-60 overflow-y-auto rounded-lg border border-gray-700">
-          {playlists && playlists.length > 0 ? (
-            <ul className="divide-y divide-gray-700">
-              {playlists.map((playlist, index) => (
-                <li
-                  key={index}
-                  className="cursor-pointer px-4 py-3 hover:bg-gray-700"
-                  onClick={() => {
-                    onAddToPlaylist(playlist.id, song.id);
-                    onClose();
-                  }}
-                >
-                  {playlist.name}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="p-4 text-gray-400">Không có playlist nào</p>
-          )}
-        </div>
-
+        {loading ? (
+          <p className="text-gray-400">Đang tải...</p>
+        ) : error ? (
+          <p className="text-red-500">{error}</p>
+        ) : (
+          <div className="mt-4 max-h-60 overflow-y-auto rounded-lg border border-gray-700">
+            {playlists.length > 0 ? (
+              <ul className="divide-y divide-gray-700">
+                {playlists.map((playlist) => (
+                  <li
+                    key={playlist.id}
+                    className="cursor-pointer px-4 py-3 hover:bg-gray-700"
+                    onClick={() => {
+                      onAddToPlaylist(playlist.id, song.id);
+                      onClose();
+                    }}
+                  >
+                    {playlist.name}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="p-4 text-gray-400">No playlists</p>
+            )}
+          </div>
+        )}
         <div className="mt-4">
           <button
             className="flex w-full items-center justify-center rounded-lg bg-green-600 py-2 hover:bg-green-500"
             onClick={() => {
               console.log("Tạo playlist mới");
-              // Thêm logic tạo playlist mới ở đây
+              // Logic tạo playlist mới ở đây, ví dụ:
+              // const newPlaylist = await createPlaylist();
+              // setPlaylists([...playlists, newPlaylist]);
             }}
           >
             <i className="fa-solid fa-plus mr-2"></i> New playlist

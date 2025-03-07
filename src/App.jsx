@@ -1,13 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import HomeScreen from "./Screens/HomeScreen.jsx";
 import LibraryScreen from "./Screens/LibraryScreen.jsx";
 import FavouritesScreen from "./Screens/FavouritesScreen.jsx";
 import PlaylistScreen from "./Screens/PlaylistScreen.jsx";
-import HistoryScreen from "./Screens/HistoryScreen.jsx";
 function App() {
   const [mainScreen, setMainScreen] = useState("home");
   const [userName, setUserName] = useState("");
-  const [latestMusic, setLatestMusic] = useState("");
+  const [latestMusic, setLatestMusic] = useState("k");
   return (
     <>
       <div className="flex h-screen">
@@ -49,14 +48,14 @@ function MainScreens({
       return <FavouritesScreen />;
     case "playlist":
       return <PlaylistScreen />;
-    case "history":
-      return <HistoryScreen />;
+    default:
+      return null;
   }
 }
 
 function Sidebar({ mainScreen, setMainScreen }) {
   return (
-    <div className="flex w-72 min-w-64 flex-col bg-black p-4">
+    <div className="flex w-72 min-w-72 flex-col bg-black p-4">
       <Header mainScreen={mainScreen} setMainScreen={setMainScreen}></Header>
       <FunctionList
         mainScreen={mainScreen}
@@ -117,15 +116,6 @@ function FunctionList({ mainScreen, setMainScreen }) {
           <button className="flex items-center">
             <i className="fa-solid fa-list-ul ml-2 mr-4"></i>
             Playlist
-          </button>
-        </li>
-        <li
-          className={`${mainScreen === "history" ? "border-white" : "border-black"} flex w-full flex-grow cursor-pointer rounded-lg border-[5px] pl-3 opacity-80 hover:opacity-100`}
-          onClick={() => setMainScreen("history")}
-        >
-          <button className="flex items-center">
-            <i className="fa-solid fa-clock-rotate-left ml-2 mr-4"></i>
-            History
           </button>
         </li>
       </ul>
