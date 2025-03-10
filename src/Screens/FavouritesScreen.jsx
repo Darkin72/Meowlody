@@ -5,7 +5,7 @@ import { SongPropertiesModal, AddToPlaylistModal } from "../Components/Modal";
 import Table from "../Components/Table";
 import Loading from "../Components/Loading";
 
-function FavouritesScreen() {
+function FavouritesScreen({ setLatestSong, setIsFavoriteChange }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -19,7 +19,8 @@ function FavouritesScreen() {
         const fetchedData = await getData();
         if (!signal.aborted) setData(fetchedData);
       } catch (error) {
-        if (!signal.aborted) console.error("CANNOT FETCH FAVORITE SONGS FROM DATABASE", error);
+        if (!signal.aborted)
+          console.error("CANNOT FETCH FAVORITE SONGS FROM DATABASE", error);
       } finally {
         if (!signal.aborted) setLoading(false);
       }
@@ -39,8 +40,15 @@ function FavouritesScreen() {
       <SearchBar data={data} setData={setData} />
       {loading && <Loading />}
 
-      <Table data={data.filter((row) => row.favorite)} setData={setData} />
-      <p>There are {data.filter((row) => row.favorite).length} favorite songs!</p>
+      <Table
+        data={data.filter((row) => row.favorite)}
+        setData={setData}
+        setLatestSong={setLatestSong}
+        setIsFavoriteChange={setIsFavoriteChange}
+      />
+      <p>
+        There are {data.filter((row) => row.favorite).length} favorite songs!
+      </p>
     </div>
   );
 }

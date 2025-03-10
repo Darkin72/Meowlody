@@ -5,10 +5,11 @@ import { UploadSongModal } from "../Components/Modal";
 import Table from "../Components/Table";
 import Loading from "../Components/Loading";
 
-function LibraryScreen() {
+function LibraryScreen({ setLatestSong, setFavoriteChange }) {
   //TODO: Lấy danh sách bài hát từ database
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [libraryChange, setLibraryChange] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -32,22 +33,26 @@ function LibraryScreen() {
     return () => {
       controller.abort();
     };
-  }, []);
+  }, [libraryChange]);
 
   return (
     <div
       className={`relative flex h-full flex-grow flex-col items-center ${loading ? "pointer-events-none opacity-60" : ""}`}
     >
-      <SearchBar data={data} setData={setData} />
+      <SearchBar
+        data={data}
+        setData={setData}
+        setLibraryChange={setLibraryChange}
+      />
       {loading && <Loading className="" />}
 
-      <Table data={data} setData={setData} />
+      <Table data={data} setData={setData} setLatestSong={setLatestSong} />
       <p>There are {data.length} songs in total!</p>
     </div>
   );
 }
 
-function SearchBar({ data, setData }) {
+function SearchBar({ data, setData, setLibraryChange }) {
   const [inputValue, setInputValue] = useState("");
   const [isUploadSongOpen, setUploadSongOpen] = useState(false);
   const handleChange = (e) => {
@@ -85,6 +90,7 @@ function SearchBar({ data, setData }) {
       </button>
       <UploadSongModal
         isOpen={isUploadSongOpen}
+        setLibraryChange={setLibraryChange}
         onClose={() => setUploadSongOpen(false)}
       />
     </div>

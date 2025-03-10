@@ -2,14 +2,16 @@ import { useState } from "react";
 import Dropdown from "./Dropdown";
 import { SongPropertiesModal, AddToPlaylistModal } from "./Modal";
 import { getPlaylists } from "../Database/GetData";
+import Loading from "./Loading";
 
-function Table({ data, setData }) {
+function Table({ data, setData, setLatestSong, setIsFavoriteChange }) {
   const [isHovered, setIsHovered] = useState(false);
   const [hoverNumber, setHoverNumber] = useState(-1);
   const [activeDropdownRow, setActiveDropdownRow] = useState(-1);
   const [selectedSong, setSelectedSong] = useState(null);
   const [isPropertiesModalOpen, setIsPropertiesModalOpen] = useState(false);
   const [isPlaylistModalOpen, setIsPlaylistModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const isRowActive = (index) => {
     return (hoverNumber === index && isHovered) || activeDropdownRow === index;
@@ -20,8 +22,8 @@ function Table({ data, setData }) {
     console.log(`Dropdown ${isOpen ? "opened" : "closed"} for row ${rowIndex}`);
   };
 
-  const handleOptionClick = (option, row) => {
-    console.log(`Option selected: ${option} for song: ${row.title}`);
+  const handleOptionClick = async (option, row) => {
+    setIsLoading(true);
     setSelectedSong(row);
 
     switch (option) {
@@ -40,17 +42,34 @@ function Table({ data, setData }) {
         setIsPlaylistModalOpen(true);
         break;
       case "Properties":
-        // Mở modal hiển thị thông tin chi tiết
         setIsPropertiesModalOpen(true);
         break;
       case "Delete":
-        // Xử lý xóa bài hát
-        console.log(`Deleting ${row.title}`);
-        setData((prevData) => prevData.filter((item) => item.id !== row.id));
-        break;
+        try {
+          const response = await fetch(
+            `http://localhost:7205/song/${row.id}?filePath=.${row.src}`,
+            {
+              method: "DELETE",
+            },
+          );
+          setData((prevData) => prevData.filter((song) => song.id !== row.id));
+          console.log(await response.json());
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setIsLoading(false);
+          break;
+        }
+      case "Download":
+        window.location.href =
+          "http://localhost:7205/download/" + row.src.substring(13);
       default:
-        console.log(`Unhandled option: ${option}`);
+        break;
     }
+  };
+
+  const handlePlayClick = (row) => {
+    setLatestSong(row);
   };
 
   const handleAddToPlaylist = (playlistId, songId) => {
@@ -58,10 +77,28 @@ function Table({ data, setData }) {
     // Thêm logic xử lý thêm bài hát vào playlist ở đây
   };
 
+  const toggleFavorite = async (song) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(
+        `http://localhost:7205/favorite/${song.id}?favorite=${1 - song.favorite}`,
+        { method: "PATCH" },
+      );
+      song.favorite = 1 - song.favorite;
+      console.log(await response.json());
+      setIsFavoriteChange((e) => !e);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div
       className={`${activeDropdownRow !== -1 ? "pointer-events-none" : ""} h-[67.5%] w-full overflow-auto rounded-md`}
     >
+      {isLoading && <Loading />}
       <table className="m-3 w-[97.5%] table-auto border-collapse">
         <thead className="sticky top-0 bg-gray-900">
           <tr className="">
@@ -92,7 +129,7 @@ function Table({ data, setData }) {
             .filter((row) => row.valid)
             .map((row, index) => (
               <tr
-                key={index}
+                key={row.id}
                 className={`text-slate-400 ${isRowActive(index) ? "bg-gray-500 text-white" : "hover:bg-gray-500 hover:text-white"}`}
                 onMouseEnter={() => {
                   setHoverNumber(index);
@@ -102,7 +139,10 @@ function Table({ data, setData }) {
               >
                 <td className="w-[2.5%] overflow-hidden text-ellipsis whitespace-nowrap py-2 pr-1">
                   {isHovered && hoverNumber === index ? (
-                    <i className="fa-solid fa-circle-play cursor-pointer"></i>
+                    <i
+                      className="fa-solid fa-circle-play cursor-pointer"
+                      onClick={() => handlePlayClick(row)}
+                    ></i>
                   ) : (
                     index + 1
                   )}
@@ -124,15 +164,7 @@ function Table({ data, setData }) {
                     row.favorite == true) && (
                     <i
                       className={`fa-regular fa-heart ${row.favorite == true && "fa-solid text-red-500"} cursor-pointer hover:text-red-100`}
-                      onClick={() => {
-                        setData((prevData) =>
-                          prevData.map((item) =>
-                            item.id === row.id
-                              ? { ...item, favorite: !item.favorite }
-                              : item,
-                          ),
-                        );
-                      }}
+                      onClick={() => toggleFavorite(row)}
                     ></i>
                   )}
                 </td>

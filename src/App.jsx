@@ -7,7 +7,11 @@ import MusicPlayer from "./Functions/MusicPlayer.jsx";
 function App() {
   const [mainScreen, setMainScreen] = useState("home");
   const [userName, setUserName] = useState("");
-  const [latestMusic, setLatestMusic] = useState("");
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [latestSong, setLatestSong] = useState(null);
+  const [isRepeat, setIsRepeat] = useState(false);
+  const [volume, setVolume] = useState(100);
+  const [isFavoriteChange, setIsFavoriteChange] = useState(false);
   return (
     <>
       <div className="flex h-screen">
@@ -17,14 +21,24 @@ function App() {
           userName={userName}
           setMainScreen={setMainScreen}
           setUserName={setUserName}
+          setLatestSong={setLatestSong}
+          setIsFavoriteChange={setIsFavoriteChange}
         />
       </div>
-      {latestMusic !== "" ? (
-        <CurrentMusic className="fixed bottom-0 left-0 w-full" />
+      {latestSong != null ? (
+        <MusicPlayer
+          song={latestSong}
+          isPlaying={isPlaying}
+          setIsPlaying={setIsPlaying}
+          isRepeat={isRepeat}
+          setIsRepeat={setIsRepeat}
+          volume={volume}
+          setVolume={setVolume}
+          setIsFavoriteChange={setIsFavoriteChange}
+        />
       ) : (
         ""
       )}
-      <MusicPlayer />
     </>
   );
 }
@@ -34,6 +48,8 @@ function MainScreens({
   userName = "",
   setMainScreen,
   setUserName,
+  setLatestSong,
+  setIsFavoriteChange,
 }) {
   switch (mainScreen) {
     case "home":
@@ -45,7 +61,12 @@ function MainScreens({
         />
       );
     case "library":
-      return <LibraryScreen />;
+      return (
+        <LibraryScreen
+          setLatestSong={setLatestSong}
+          setIsFavoriteChange={setIsFavoriteChange}
+        />
+      );
     case "favourites":
       return <FavouritesScreen />;
     case "playlist":
@@ -122,11 +143,6 @@ function FunctionList({ mainScreen, setMainScreen }) {
         </li>
       </ul>
     </nav>
-  );
-}
-function CurrentMusic() {
-  return (
-    <div className="fixed bottom-0 flex w-full items-center justify-between bg-gray-800 p-4"></div>
   );
 }
 

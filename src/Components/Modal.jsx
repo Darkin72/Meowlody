@@ -31,7 +31,7 @@ function ModalComponent({
       <div className="my-4">{children}</div>
 
       <div className="mt-6 flex justify-end">
-        {actionButton && (
+        {actionButton.clickable && (
           <button
             onClick={actionButton.onClick}
             className={`rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-500 ${
@@ -50,7 +50,12 @@ function ModalComponent({
 export function SongPropertiesModal({ isOpen, onClose, song }) {
   if (!song) return null;
   return (
-    <ModalComponent isOpen={isOpen} onClose={onClose} title="Properties">
+    <ModalComponent
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Properties"
+      actionButton={{ clickable: false }}
+    >
       <div className="m-8 grid grid-cols-2 gap-[20px]">
         <div className="col-span-2">
           <p className="text-sm text-gray-400">Title</p>
@@ -129,7 +134,12 @@ export function AddToPlaylistModal({ isOpen, onClose, song, onAddToPlaylist }) {
   if (!isOpen || !song) return null;
 
   return (
-    <ModalComponent isOpen={isOpen} onClose={onClose} title="Add to playlist">
+    <ModalComponent
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Add to playlist"
+      actionButton={{ clickable: false }}
+    >
       <div className="m-8">
         <p className="mb-2">
           Choose playlist to add: <strong>{song.title}</strong>
@@ -178,7 +188,7 @@ export function AddToPlaylistModal({ isOpen, onClose, song, onAddToPlaylist }) {
   );
 }
 
-export function UploadSongModal({ isOpen, onClose }) {
+export function UploadSongModal({ isOpen, onClose, setLibraryChange }) {
   const [isUploaded, setIsUploaded] = useState(false);
   const [file, setFile] = useState(null);
   const [response, setResponse] = useState(null);
@@ -224,6 +234,7 @@ export function UploadSongModal({ isOpen, onClose }) {
       setResponse(null);
     } finally {
       setIsLoading(false);
+      setLibraryChange((prev) => !prev);
     }
   };
   return (
@@ -265,15 +276,13 @@ export function UploadSongModal({ isOpen, onClose }) {
           </div>
 
           <div>
-            <p className="text-sm text-gray-400">Length</p>
+            <p className="text-sm text-gray-400">Duration</p>
             <p className="text-lg">{song.duration || "No information"}</p>
           </div>
 
           <div>
             <p className="text-sm text-gray-400">Genre</p>
-            <p className="text-lg">
-              {song.genre.join(" ") || "No information"}
-            </p>
+            <p className="text-lg">{song.genre || "No information"}</p>
           </div>
 
           <div>
