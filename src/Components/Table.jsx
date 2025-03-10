@@ -120,9 +120,10 @@ function Table({ data, setData }) {
                   {row.date_added || "Unknown"}
                 </td>
                 <td className="w-[2.5%] overflow-hidden text-ellipsis whitespace-nowrap px-1 py-2 text-center">
-                  {((isHovered && hoverNumber === index) || row.favorite) && (
+                  {((isHovered && hoverNumber === index) ||
+                    row.favorite == true) && (
                     <i
-                      className={`fa-regular fa-heart ${row.favorite && "fa-solid text-red-500"} cursor-pointer hover:text-red-100`}
+                      className={`fa-regular fa-heart ${row.favorite == true && "fa-solid text-red-500"} cursor-pointer hover:text-red-100`}
                       onClick={() => {
                         setData((prevData) =>
                           prevData.map((item) =>

@@ -10,25 +10,25 @@ function FavouritesScreen() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // isMounted kiểm tra xem component có tổn tại ko ?
-    let isMounted = true;
+    const controller = new AbortController();
+    const signal = controller.signal;
 
     const fetchData = async () => {
       setLoading(true);
       try {
         const fetchedData = await getData();
-        if (isMounted) setData(fetchedData);
+        if (!signal.aborted) setData(fetchedData);
       } catch (error) {
-        console.error("CANNOT FETCH DATA", error);
+        if (!signal.aborted) console.error("CANNOT FETCH FAVORITE SONGS FROM DATABASE", error);
       } finally {
-        if (isMounted) setLoading(false);
+        if (!signal.aborted) setLoading(false);
       }
     };
 
     fetchData();
 
     return () => {
-      isMounted = false;
+      controller.abort();
     };
   }, []);
 
@@ -37,10 +37,10 @@ function FavouritesScreen() {
       className={`relative flex h-full flex-grow flex-col items-center ${loading ? "pointer-events-none opacity-60" : ""}`}
     >
       <SearchBar data={data} setData={setData} />
-      {loading && <Loading className="" />}
+      {loading && <Loading />}
 
       <Table data={data.filter((row) => row.favorite)} setData={setData} />
-      <p>There are {data.length} favorite songs!</p>
+      <p>There are {data.filter((row) => row.favorite).length} favorite songs!</p>
     </div>
   );
 }

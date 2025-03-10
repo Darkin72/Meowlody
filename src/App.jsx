@@ -3,10 +3,11 @@ import HomeScreen from "./Screens/HomeScreen.jsx";
 import LibraryScreen from "./Screens/LibraryScreen.jsx";
 import FavouritesScreen from "./Screens/FavouritesScreen.jsx";
 import PlaylistScreen from "./Screens/PlaylistScreen.jsx";
+import MusicPlayer from "./Functions/MusicPlayer.jsx";
 function App() {
   const [mainScreen, setMainScreen] = useState("home");
   const [userName, setUserName] = useState("");
-  const [latestMusic, setLatestMusic] = useState("k");
+  const [latestMusic, setLatestMusic] = useState("");
   return (
     <>
       <div className="flex h-screen">
@@ -23,6 +24,7 @@ function App() {
       ) : (
         ""
       )}
+      <MusicPlayer />
     </>
   );
 }
@@ -124,59 +126,7 @@ function FunctionList({ mainScreen, setMainScreen }) {
 }
 function CurrentMusic() {
   return (
-    <div className="fixed bottom-0 flex w-full items-center justify-between bg-gray-800 p-4">
-      <div className="flex w-[15%] items-center">
-        <img
-          alt="Album cover"
-          className="mr-4 h-12 w-12 rounded-md object-cover"
-          height="50"
-          src="https://placehold.co/50x50"
-          width="50"
-        />
-        <div className="w-[70%]">
-          <h4 className="overflow-clip text-ellipsis text-sm font-semibold">
-            Sweden
-          </h4>
-          <p className="overflow-clip text-ellipsis text-xs text-gray-400">
-            InfernalEntertain
-          </p>
-        </div>
-      </div>
-      <div className="m-2 flex w-[15%] items-center justify-center">
-        <button className="flex-grow text-gray-400">
-          <i className="fa-solid fa-heart"></i>
-        </button>
-        <button className="flex-grow text-gray-400">
-          <i className="fa-solid fa-backward"></i>
-        </button>
-        <button className="flex-grow text-gray-400">
-          <i className="fa-solid fa-play"></i>
-        </button>
-        <button className="flex-grow text-gray-400">
-          <i className="fa-solid fa-forward"></i>
-        </button>
-        <button className="flex-grow text-gray-400">
-          <i className="fa-solid fa-repeat"></i>
-        </button>
-      </div>
-      <div className="flex w-[45%] items-center">
-        <span className="mr-2 w-[13%] text-xs text-gray-400">0:00 / 3:47</span>
-        <div className="h-2 w-[90%] max-w-[720px] overflow-hidden rounded-full bg-gray-600">
-          <div className="h-full w-0 bg-amber-50"></div>
-        </div>
-      </div>
-      <div className="flex max-w-[12%] flex-grow items-center justify-center gap-3">
-        <button className="text-gray-400">
-          <i className="fa-solid fa-volume-up"></i>
-        </button>
-        <div className="h-2 flex-auto overflow-hidden rounded-full bg-gray-600">
-          <div className="h-full w-full bg-amber-50"></div>
-        </div>
-        <button className="text-gray-400">
-          <i className="fa-solid fa-bars"></i>
-        </button>
-      </div>
-    </div>
+    <div className="fixed bottom-0 flex w-full items-center justify-between bg-gray-800 p-4"></div>
   );
 }
 

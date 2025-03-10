@@ -1,237 +1,37 @@
 async function getData() {
-  let data = [
-    {
-      id: 1,
-      title: "Nàng Thơ - Hoàng Dũng",
-      artist: "Hoàng Dũng",
-      album: "Single",
-      genre: "Ballad",
-      date_added: "2025-03-01",
-      duration: "05:05",
-      type: ".mp3",
-      favorite: true,
-      valid: true,
-    },
-    {
-      id: 2,
-      title: "Shape of You",
-      artist: "Ed Sheeran",
-      album: "÷ (Divide)",
-      genre: "Pop",
-      date_added: "2025-03-01",
-      duration: "03:53",
-      type: ".mp3",
-      favorite: false,
-      valid: true,
-    },
-    {
-      id: 3,
-      title: "Dance Monkey",
-      artist: "Tones and I",
-      album: "The Kids Are Coming",
-      genre: "Pop",
-      date_added: "2025-03-01",
-      duration: "03:29",
-      type: ".wav",
-      favorite: false,
-      valid: true,
-    },
-    {
-      id: 4,
-      title: "Someone You Loved",
-      artist: "Lewis Capaldi",
-      album: "Divinely Uninspired to a Hellish Extent",
-      genre: "Pop",
-      date_added: "2025-03-02",
-      duration: "03:02",
-      type: ".mp3",
-      favorite: true,
-      valid: true,
-    },
-    {
-      id: 5,
-      title: "Bad Guy",
-      artist: "Billie Eilish",
-      album: "When We All Fall Asleep, Where Do We Go?",
-      genre: "Alternative",
-      date_added: "2025-03-02",
-      duration: "03:14",
-      type: ".ogg",
-      favorite: false,
-      valid: true,
-    },
-    {
-      id: 6,
-      title: "Believer",
-      artist: "Imagine Dragons",
-      album: "Evolve",
-      genre: "Rock",
-      date_added: "2025-03-02",
-      duration: "03:24",
-      type: ".mp3",
-      favorite: false,
-      valid: true,
-    },
-    {
-      id: 7,
-      title: "Uptown Funk",
-      artist: "Mark Ronson ft. Bruno Mars",
-      album: "Uptown Special",
-      genre: "Funk",
-      date_added: "2025-03-02",
-      duration: "04:30",
-      type: ".wav",
-      favorite: true,
-      valid: true,
-    },
-    {
-      id: 8,
-      title: "Thinking Out Loud",
-      artist: "Ed Sheeran",
-      album: "x (Multiply)",
-      genre: "Pop",
-      date_added: "2025-03-03",
-      duration: "04:41",
-      type: ".mp3",
-      favorite: false,
-      valid: true,
-    },
-    {
-      id: 9,
-      title: "Despacito",
-      artist: "Luis Fonsi ft. Daddy Yankee",
-      album: "Vida",
-      genre: "Reggaeton",
-      date_added: "2025-03-03",
-      duration: "03:47",
-      type: ".ogg",
-      favorite: false,
-      valid: true,
-    },
-    {
-      id: 10,
-      title: "Shallow",
-      artist: "Lady Gaga & Bradley Cooper",
-      album: "A Star Is Born",
-      genre: "Pop",
-      date_added: "2025-03-03",
-      duration: "03:36",
-      type: ".mp3",
-      favorite: true,
-      valid: true,
-    },
-    {
-      id: 11,
-      title: "Bohemian Rhapsody",
-      artist: "Queen",
-      album: "A Night at the Opera",
-      genre: "Rock",
-      date_added: "2025-03-03",
-      duration: "05:55",
-      type: ".wav",
-      favorite: true,
-      valid: true,
-    },
-    {
-      id: 12,
-      title: "Sweet Child O' Mine",
-      artist: "Guns N' Roses",
-      album: "Appetite for Destruction",
-      genre: "Rock",
-      date_added: "2025-03-03",
-      duration: "05:56",
-      type: ".mp3",
-      favorite: false,
-      valid: true,
-    },
-    {
-      id: 13,
-      title: "Smells Like Teen Spirit",
-      artist: "Nirvana",
-      album: "Nevermind",
-      genre: "Grunge",
-      date_added: "2025-03-04",
-      duration: "05:01",
-      type: ".ogg",
-      favorite: false,
-      valid: true,
-    },
-    {
-      id: 14,
-      title: "Billie Jean",
-      artist: "Michael Jackson",
-      album: "Thriller",
-      genre: "Pop",
-      date_added: "2025-03-04",
-      duration: "04:54",
-      type: ".mp3",
-      favorite: true,
-      valid: true,
-    },
-    {
-      id: 15,
-      title: "Hotel California",
-      artist: "Eagles",
-      album: "Hotel California",
-      genre: "Rock",
-      date_added: "2025-03-04",
-      duration: "06:30",
-      type: ".wav",
-      favorite: false,
-      valid: true,
-    },
-    {
-      id: 16,
-      title: "Stairway to Heaven",
-      artist: "Led Zeppelin",
-      album: "Led Zeppelin IV",
-      genre: "Rock",
-      date_added: "2025-03-04",
-      duration: "08:02",
-      type: ".mp3",
-      favorite: true,
-      valid: true,
-    },
-    {
-      id: 17,
-      title: "Imagine",
-      artist: "John Lennon",
-      album: "Imagine",
-      genre: "Rock",
-      date_added: "2025-03-04",
-      duration: "03:04",
-      type: ".ogg",
-      favorite: false,
-      valid: true,
-    },
-    {
-      id: 18,
-      title: "Sweet Caroline",
-      artist: "Neil Diamond",
-      album: "Sweet Caroline",
-      genre: "Pop",
-      date_added: "2025-03-04",
-      duration: "03:21",
-      type: ".mp3",
-      favorite: false,
-      valid: true,
-    },
-  ];
-
-  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-  await sleep(1000);
-
-  return data;
+  var data = [];
+  try {
+    const response = await fetch("http://localhost:7205/songs");
+    var data = await response.json();
+  } catch (error) {
+    console.log(error);
+  } finally {
+    console.log(data);
+    data = data.map((row) => {
+      row.valid = true;
+      return row;
+    });
+    return data;
+  }
 }
 
 export async function getPlaylists() {
-  let playlists = [{ id: 1, name: "Favourites" }];
+  let playlists = [
+    { id: 1, name: "Favourites" },
+    {
+      id: 2,
+      name: "My playlist",
+    },
+  ];
   return playlists;
 }
 
 export async function getPlaylistSongs(playlistId) {
   let playlistSongs = (await getData()).slice(0, 12, 2);
-  return playlistSongs;
+  if (playlistId === 1) {
+    return playlistSongs;
+  } else {
+    return [];
+  }
 }
 export default getData;

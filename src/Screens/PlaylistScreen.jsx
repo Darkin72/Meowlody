@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { getPlaylists, getPlaylistSongs } from "../Database/GetData";
 import Table from "../Components/Table";
 import getData from "../Database/GetData";
+import Loading from "../Components/Loading";
 
 function PlaylistScreen() {
   const [playlists, setPlaylists] = useState([]);
@@ -9,51 +10,56 @@ function PlaylistScreen() {
   const [isExpanded, setIsExpanded] = useState(true);
   const [playlistSongs, setPlaylistSongs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingSongs, setLoadingSongs] = useState(false);
 
   //Lấy danh sách playlist
   useEffect(() => {
-    // isMounted kiểm tra xem component có tổn tại ko ?
-    let isMounted = true;
+    const controller = new AbortController();
+    const signal = controller.signal;
 
     const fetchedPlaylists = async () => {
       setLoading(true);
       try {
         const fetchedPlaylists = await getPlaylists();
-        if (isMounted) setPlaylists(fetchedPlaylists);
+        if (!signal.aborted) setPlaylists(fetchedPlaylists);
       } catch (error) {
-        console.error("CANNOT FETCH DATA", error);
+        if (!signal.aborted) console.error("CANNOT FETCH PLAYLISTS", error);
       } finally {
-        if (isMounted) setLoading(false);
+        if (!signal.aborted) setLoading(false);
       }
     };
 
     fetchedPlaylists();
 
     return () => {
-      isMounted = false;
+      controller.abort();
     };
   }, []);
 
   //Lấy danh sách bài hát sau khi playlist thay đổi
   useEffect(() => {
-    let isMounted = true;
+    const controller = new AbortController();
+    const signal = controller.signal;
 
     const fetchedPlaylistSongs = async () => {
-      setLoading(true);
+      setLoadingSongs(true);
       try {
-        const fetchedPlaylistSongs = await getPlaylistSongs();
-        if (isMounted) setPlaylistSongs(fetchedPlaylistSongs);
+        const fetchedPlaylistSongs = await getPlaylistSongs(
+          selectedPlaylist.id,
+        );
+        if (!signal.aborted) setPlaylistSongs(fetchedPlaylistSongs);
       } catch (error) {
-        console.error("CANNOT FETCH DATA", error);
+        if (!signal.aborted)
+          console.error("CANNOT FETCH SONGS FROM PLAYLIST", error);
       } finally {
-        if (isMounted) setLoading(false);
+        if (!signal.aborted) setLoadingSongs(false);
       }
     };
 
     fetchedPlaylistSongs();
 
     return () => {
-      isMounted = false;
+      controller.abort();
     };
   }, [selectedPlaylist]);
 
@@ -63,6 +69,7 @@ function PlaylistScreen() {
 
   return (
     <div className="flex h-full w-full bg-gray-900 text-white">
+      {loading && <Loading />}
       <div className="w-[20%] border-r border-gray-700 bg-gray-800 p-4">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -107,24 +114,12 @@ function PlaylistScreen() {
       <div className="flex-1">
         {selectedPlaylist ? (
           <>
-            <div className="mb-6">
+            <div className="m-6">
               <h1 className="text-3xl font-bold">{selectedPlaylist.name}</h1>
-              <p className="mt-2 text-gray-400">
-                {selectedPlaylist.songCount} songs
-              </p>
+              <p className="mt-2 text-gray-400">{playlistSongs.length} songs</p>
             </div>
-
-            {playlistSongs.length > 0 ? (
-              <Table data={playlistSongs} setData={setPlaylistSongs} />
-            ) : (
-              <div className="mt-10 text-center text-slate-600">
-                <i className="fa-solid fa-music mb-4 text-5xl"></i>
-                <p className="text-xl">No songs in playlist</p>
-                <button className="mt-4 rounded-full bg-green-500 px-6 py-2 font-semibold hover:bg-green-600">
-                  Add songs
-                </button>
-              </div>
-            )}
+            {loadingSongs && <Loading />}
+            <Table data={playlistSongs} setData={setPlaylistSongs} />
           </>
         ) : (
           <div className="flex h-full items-center justify-center">

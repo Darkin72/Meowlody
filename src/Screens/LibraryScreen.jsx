@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Dropdown from "../Components/Dropdown";
 import getData from "../Database/GetData";
-import { SongPropertiesModal, AddToPlaylistModal } from "../Components/Modal";
+import { UploadSongModal } from "../Components/Modal";
 import Table from "../Components/Table";
 import Loading from "../Components/Loading";
 
@@ -11,25 +11,26 @@ function LibraryScreen() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // isMounted kiểm tra xem component có tổn tại ko ?
-    let isMounted = true;
+    const controller = new AbortController();
+    const signal = controller.signal;
 
     const fetchData = async () => {
       setLoading(true);
       try {
         const fetchedData = await getData();
-        if (isMounted) setData(fetchedData);
+        if (!signal.aborted) setData(fetchedData);
       } catch (error) {
-        console.error("CANNOT FETCH DATA", error);
+        if (!signal.aborted)
+          console.error("CANNOT FETCH SONGS FROM DATABASE", error);
       } finally {
-        if (isMounted) setLoading(false);
+        if (!signal.aborted) setLoading(false);
       }
     };
 
     fetchData();
 
     return () => {
-      isMounted = false;
+      controller.abort();
     };
   }, []);
 
@@ -48,6 +49,7 @@ function LibraryScreen() {
 
 function SearchBar({ data, setData }) {
   const [inputValue, setInputValue] = useState("");
+  const [isUploadSongOpen, setUploadSongOpen] = useState(false);
   const handleChange = (e) => {
     const value = e.target.value;
     setInputValue(value);
@@ -73,11 +75,18 @@ function SearchBar({ data, setData }) {
       </div>
       <button
         className="m-[5%] ml-0 mr-[7%] h-14 w-[20%] rounded-md border-2 border-gray-300 bg-gray-800 hover:bg-gray-500 active:animate-ping"
-        onClick={() => setData(data)}
+        onClick={() => {
+          setUploadSongOpen(true);
+          // setData(data);
+        }}
       >
         <i className="fa-solid fa-circle-plus mr-3"></i>
         Add new song
       </button>
+      <UploadSongModal
+        isOpen={isUploadSongOpen}
+        onClose={() => setUploadSongOpen(false)}
+      />
     </div>
   );
 }
