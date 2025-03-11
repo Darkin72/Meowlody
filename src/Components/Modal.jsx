@@ -252,7 +252,7 @@ export function UploadSongModal({ isOpen, onClose, setLibraryChange }) {
       <div className="m-8">
         <input
           type="file"
-          accept=".mp3"
+          accept=".mp3, .wav, .ogg, .flac"
           className="text-gray-400"
           onChange={handleFileChange}
         ></input>

@@ -3,8 +3,15 @@ import Dropdown from "./Dropdown";
 import { SongPropertiesModal, AddToPlaylistModal } from "./Modal";
 import { getPlaylists } from "../Database/GetData";
 import Loading from "./Loading";
+import { useQueue } from "../Context/QueueContext";
 
-function Table({ data, setData, setLatestSong, setIsFavoriteChange }) {
+function Table({
+  data,
+  setData,
+  setLatestSong,
+  setIsFavoriteChange,
+}) {
+  const { queue, setQueue } = useQueue();
   const [isHovered, setIsHovered] = useState(false);
   const [hoverNumber, setHoverNumber] = useState(-1);
   const [activeDropdownRow, setActiveDropdownRow] = useState(-1);
@@ -19,32 +26,42 @@ function Table({ data, setData, setLatestSong, setIsFavoriteChange }) {
 
   const handleDropdownOpenChange = (isOpen, rowIndex) => {
     setActiveDropdownRow(isOpen ? rowIndex : -1);
-    console.log(`Dropdown ${isOpen ? "opened" : "closed"} for row ${rowIndex}`);
   };
 
   const handleOptionClick = async (option, row) => {
-    setIsLoading(true);
     setSelectedSong(row);
 
     switch (option) {
       case "Play next":
-        // Xử lý phát bài hát tiếp theo
-        console.log(`Playing next: ${row.title}`);
-        // Thêm logic xử lý phát bài hát tiếp theo ở đây
+        if (queue.length === 0) {
+          setLatestSong(row);
+        }
+        setQueue((prevQueue) => {
+          if (prevQueue.length === 0) {
+            const newQueue = [{ ...row }];
+            return newQueue;
+          }
+          const newQueue = [{ ...prevQueue[0] }, { ...row }, ...prevQueue.slice(1).map(item => ({ ...item }))];
+          return newQueue;
+        });
         break;
       case "Add to queue":
-        // Xử lý thêm vào hàng đợi
-        console.log(`Adding to queue: ${row.title}`);
-        // Thêm logic xử lý thêm vào hàng đợi ở đây
+        if (queue.length === 0) {
+          setLatestSong(row);
+        }
+        setQueue((prevQueue) => {
+          const newQueue = [...prevQueue, { ...row }];
+          return newQueue;
+        });
         break;
       case "Add to playlist":
-        // Mở modal thêm vào playlist
         setIsPlaylistModalOpen(true);
         break;
       case "Properties":
         setIsPropertiesModalOpen(true);
         break;
       case "Delete":
+        setIsLoading(true);
         try {
           const response = await fetch(
             `http://localhost:7205/song/${row.id}?filePath=.${row.src}`,
@@ -53,9 +70,7 @@ function Table({ data, setData, setLatestSong, setIsFavoriteChange }) {
             },
           );
           setData((prevData) => prevData.filter((song) => song.id !== row.id));
-          console.log(await response.json());
         } catch (error) {
-          console.log(error);
         } finally {
           setIsLoading(false);
           break;
@@ -73,7 +88,6 @@ function Table({ data, setData, setLatestSong, setIsFavoriteChange }) {
   };
 
   const handleAddToPlaylist = (playlistId, songId) => {
-    console.log(`Adding song ID ${songId} to playlist ID ${playlistId}`);
     // Thêm logic xử lý thêm bài hát vào playlist ở đây
   };
 
@@ -85,10 +99,8 @@ function Table({ data, setData, setLatestSong, setIsFavoriteChange }) {
         { method: "PATCH" },
       );
       song.favorite = 1 - song.favorite;
-      console.log(await response.json());
       setIsFavoriteChange((e) => !e);
     } catch (error) {
-      console.log(error);
     } finally {
       setIsLoading(false);
     }
@@ -157,7 +169,7 @@ function Table({ data, setData, setLatestSong, setIsFavoriteChange }) {
                   {row.album || "Unknown"}
                 </td>
                 <td className="w-[10%] overflow-hidden text-ellipsis whitespace-nowrap px-1 py-2">
-                  {row.date_added || "Unknown"}
+                  {row.date || "Unknown"}
                 </td>
                 <td className="w-[2.5%] overflow-hidden text-ellipsis whitespace-nowrap px-1 py-2 text-center">
                   {((isHovered && hoverNumber === index) ||

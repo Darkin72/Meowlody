@@ -4,6 +4,8 @@ import LibraryScreen from "./Screens/LibraryScreen.jsx";
 import FavouritesScreen from "./Screens/FavouritesScreen.jsx";
 import PlaylistScreen from "./Screens/PlaylistScreen.jsx";
 import MusicPlayer from "./Functions/MusicPlayer.jsx";
+import { QueueProvider, useQueue } from "./Context/QueueContext.jsx";
+
 function App() {
   const [mainScreen, setMainScreen] = useState("home");
   const [userName, setUserName] = useState("");
@@ -12,6 +14,47 @@ function App() {
   const [isRepeat, setIsRepeat] = useState(false);
   const [volume, setVolume] = useState(100);
   const [isFavoriteChange, setIsFavoriteChange] = useState(false);
+
+  return (
+    <QueueProvider>
+      <AppContent
+        mainScreen={mainScreen}
+        setMainScreen={setMainScreen}
+        userName={userName}
+        setUserName={setUserName}
+        isPlaying={isPlaying}
+        setIsPlaying={setIsPlaying}
+        latestSong={latestSong}
+        setLatestSong={setLatestSong}
+        isRepeat={isRepeat}
+        setIsRepeat={setIsRepeat}
+        volume={volume}
+        setVolume={setVolume}
+        isFavoriteChange={isFavoriteChange}
+        setIsFavoriteChange={setIsFavoriteChange}
+      />
+    </QueueProvider>
+  );
+}
+
+function AppContent({
+  mainScreen,
+  setMainScreen,
+  userName,
+  setUserName,
+  isPlaying,
+  setIsPlaying,
+  latestSong,
+  setLatestSong,
+  isRepeat,
+  setIsRepeat,
+  volume,
+  setVolume,
+  isFavoriteChange,
+  setIsFavoriteChange,
+}) {
+  const { queue, setQueue } = useQueue();
+
   return (
     <>
       <div className="flex h-screen">
@@ -23,11 +66,14 @@ function App() {
           setUserName={setUserName}
           setLatestSong={setLatestSong}
           setIsFavoriteChange={setIsFavoriteChange}
+          queue={queue}
+          setQueue={setQueue}
         />
       </div>
       {latestSong != null ? (
         <MusicPlayer
           song={latestSong}
+          setSong={setLatestSong}
           isPlaying={isPlaying}
           setIsPlaying={setIsPlaying}
           isRepeat={isRepeat}
@@ -35,6 +81,8 @@ function App() {
           volume={volume}
           setVolume={setVolume}
           setIsFavoriteChange={setIsFavoriteChange}
+          queue={queue}
+          setQueue={setQueue}
         />
       ) : (
         ""
@@ -50,6 +98,8 @@ function MainScreens({
   setUserName,
   setLatestSong,
   setIsFavoriteChange,
+  queue,
+  setQueue,
 }) {
   switch (mainScreen) {
     case "home":
@@ -65,12 +115,21 @@ function MainScreens({
         <LibraryScreen
           setLatestSong={setLatestSong}
           setIsFavoriteChange={setIsFavoriteChange}
+          queue={queue}
+          setQueue={setQueue}
         />
       );
     case "favourites":
-      return <FavouritesScreen />;
+      return (
+        <FavouritesScreen
+          setLatestSong={setLatestSong}
+          setIsFavoriteChange={setIsFavoriteChange}
+          queue={queue}
+          setQueue={setQueue}
+        />
+      );
     case "playlist":
-      return <PlaylistScreen />;
+      return <PlaylistScreen queue={queue} setQueue={setQueue} />;
     default:
       return null;
   }

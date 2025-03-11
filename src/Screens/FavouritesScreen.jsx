@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
-import Dropdown from "../Components/Dropdown";
 import getData from "../Database/GetData";
-import { SongPropertiesModal, AddToPlaylistModal } from "../Components/Modal";
 import Table from "../Components/Table";
 import Loading from "../Components/Loading";
 
-function FavouritesScreen({ setLatestSong, setIsFavoriteChange }) {
+function FavouritesScreen({ setLatestSong, setIsFavoriteChange, setQueue }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -45,6 +43,7 @@ function FavouritesScreen({ setLatestSong, setIsFavoriteChange }) {
         setData={setData}
         setLatestSong={setLatestSong}
         setIsFavoriteChange={setIsFavoriteChange}
+        setQueue={setQueue}
       />
       <p>
         There are {data.filter((row) => row.favorite).length} favorite songs!

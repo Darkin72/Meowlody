@@ -88,6 +88,7 @@ const fileFilter = (req, file, cb) => {
     "audio/wav", // WAV
     "audio/wave", // WAV
     "audio/ogg", // OGG
+    "audio/flac", // FLAC
   ];
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);

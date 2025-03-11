@@ -6,7 +6,6 @@ import Table from "../Components/Table";
 import Loading from "../Components/Loading";
 
 function LibraryScreen({ setLatestSong, setFavoriteChange }) {
-  //TODO: Lấy danh sách bài hát từ database
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [libraryChange, setLibraryChange] = useState(false);
@@ -46,7 +45,12 @@ function LibraryScreen({ setLatestSong, setFavoriteChange }) {
       />
       {loading && <Loading className="" />}
 
-      <Table data={data} setData={setData} setLatestSong={setLatestSong} />
+      <Table
+        data={data}
+        setData={setData}
+        setLatestSong={setLatestSong}
+        setIsFavoriteChange={setFavoriteChange}
+      />
       <p>There are {data.length} songs in total!</p>
     </div>
   );
@@ -82,7 +86,6 @@ function SearchBar({ data, setData, setLibraryChange }) {
         className="m-[5%] ml-0 mr-[7%] h-14 w-[20%] rounded-md border-2 border-gray-300 bg-gray-800 hover:bg-gray-500 active:animate-ping"
         onClick={() => {
           setUploadSongOpen(true);
-          // setData(data);
         }}
       >
         <i className="fa-solid fa-circle-plus mr-3"></i>
