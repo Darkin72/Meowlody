@@ -9,7 +9,6 @@ const Dropdown = ({ buttonLabel, isHovered, onOpenChange, onOptionClick }) => {
   const options = [
     ["Play next", "fa-solid fa-forward-step"],
     ["Add to queue", "fa-solid fa-list-ol"],
-    ["Add to playlist", "fa-solid fa-plus"],
     ["Properties", "fa-solid fa-circle-info"],
     ["Download", "fa-solid fa-download"],
     ["Delete", "fa-solid fa-trash"],
@@ -46,7 +45,6 @@ const Dropdown = ({ buttonLabel, isHovered, onOpenChange, onOptionClick }) => {
   }, [isOpen, onOpenChange]);
 
   const toggleDropdown = () => {
-
     checkDropDirection();
     
     const newIsOpen = !isOpen;

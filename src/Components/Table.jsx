@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Dropdown from "./Dropdown";
-import { SongPropertiesModal, AddToPlaylistModal } from "./Modal";
-import { getPlaylists } from "../Database/GetData";
+import { SongPropertiesModal } from "./Modal";
 import Loading from "./Loading";
 import { useQueue } from "../Context/QueueContext";
 
@@ -17,7 +16,6 @@ function Table({
   const [activeDropdownRow, setActiveDropdownRow] = useState(-1);
   const [selectedSong, setSelectedSong] = useState(null);
   const [isPropertiesModalOpen, setIsPropertiesModalOpen] = useState(false);
-  const [isPlaylistModalOpen, setIsPlaylistModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const isRowActive = (index) => {
@@ -54,9 +52,6 @@ function Table({
           return newQueue;
         });
         break;
-      case "Add to playlist":
-        setIsPlaylistModalOpen(true);
-        break;
       case "Properties":
         setIsPropertiesModalOpen(true);
         break;
@@ -85,10 +80,6 @@ function Table({
 
   const handlePlayClick = (row) => {
     setLatestSong(row);
-  };
-
-  const handleAddToPlaylist = (playlistId, songId) => {
-    // Thêm logic xử lý thêm bài hát vào playlist ở đây
   };
 
   const toggleFavorite = async (song) => {
@@ -204,13 +195,6 @@ function Table({
         isOpen={isPropertiesModalOpen}
         onClose={() => setIsPropertiesModalOpen(false)}
         song={selectedSong}
-      />
-
-      <AddToPlaylistModal
-        isOpen={isPlaylistModalOpen}
-        onClose={() => setIsPlaylistModalOpen(false)}
-        song={selectedSong}
-        onAddToPlaylist={handleAddToPlaylist}
       />
     </div>
   );

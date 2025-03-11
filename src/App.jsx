@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import HomeScreen from "./Screens/HomeScreen.jsx";
 import LibraryScreen from "./Screens/LibraryScreen.jsx";
 import FavouritesScreen from "./Screens/FavouritesScreen.jsx";
-import PlaylistScreen from "./Screens/PlaylistScreen.jsx";
 import MusicPlayer from "./Functions/MusicPlayer.jsx";
 import { QueueProvider, useQueue } from "./Context/QueueContext.jsx";
 
@@ -128,8 +127,6 @@ function MainScreens({
           setQueue={setQueue}
         />
       );
-    case "playlist":
-      return <PlaylistScreen queue={queue} setQueue={setQueue} />;
     default:
       return null;
   }
@@ -160,6 +157,7 @@ function Header({ setMainScreen }) {
     </header>
   );
 }
+
 function FunctionList({ mainScreen, setMainScreen }) {
   return (
     <nav className="mt-8 flex-1">
@@ -189,15 +187,6 @@ function FunctionList({ mainScreen, setMainScreen }) {
           <button className="flex items-center">
             <i className="fa-solid fa-heart ml-2 mr-4"></i>
             Favourites
-          </button>
-        </li>
-        <li
-          className={`${mainScreen === "playlist" ? "border-white" : "border-black"} flex w-full flex-grow cursor-pointer rounded-lg border-[5px] pl-3 opacity-80 hover:opacity-100`}
-          onClick={() => setMainScreen("playlist")}
-        >
-          <button className="flex items-center">
-            <i className="fa-solid fa-list-ul ml-2 mr-4"></i>
-            Playlist
           </button>
         </li>
       </ul>

@@ -4,17 +4,18 @@ import { parseFile } from "music-metadata"; //Metadata parser
 import cors from "cors"; // Cross-origin resource sharing
 import formatTime from "./FormatTime.js";
 import path from "path";
-import mysql from "mysql";
+import mysql from "mysql2";
 import fs from "fs";
 
 const app = express();
 app.use(cors());
 app.use(express.json()); //read json file
+app.use("/app/uploads", express.static("/app/uploads"));
 
 const db = mysql.createConnection({
-  host: "localhost",
+  host: "music_database",
   user: "root",
-  password: "123456",
+  password: "root",
   database: "music_db",
 });
 
@@ -73,7 +74,7 @@ const storage = diskStorage({
   destination: function (req, file, cb) {
     // req: Request object
     // cb: Callback
-    cb(null, "./app/uploads");
+    cb(null, "/app/uploads");
     //null là ko có lỗi
   },
 
@@ -106,8 +107,8 @@ const upload = multer({
 });
 
 // Check folder
-if (!fs.existsSync("./app/uploads")) {
-  fs.mkdirSync("./app/uploads", { recursive: true });
+if (!fs.existsSync("/app/uploads")) {
+  fs.mkdirSync("/app/uploads", { recursive: true });
   console.log("Created uploads folder");
 } else {
   console.log("Uploads folder already exists");
@@ -130,7 +131,7 @@ app.post("/upload", upload.single("mp3file"), async (req, res) => {
       duration: formatTime(metadata.format.duration) || "No information",
       date: new Date().toISOString().split("T")[0],
       type: path.extname(req.file.originalname),
-      src: "/app/uploads/" + req.file.filename,
+      src: "http://localhost:7205/app/uploads/" + req.file.filename,
     };
 
     if (audioInfo.genre !== "No information") {
@@ -167,7 +168,7 @@ app.post("/upload", upload.single("mp3file"), async (req, res) => {
 
 app.get("/download/:filename", (req, res) => {
   const filename = req.params.filename;
-  const filePath = path.resolve("./app/uploads", filename);
+  const filePath = path.resolve("/app/uploads", filename);
 
   res.download(filePath, (err) => {
     if (err) {

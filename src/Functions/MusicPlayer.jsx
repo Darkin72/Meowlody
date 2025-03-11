@@ -43,6 +43,12 @@ function MusicPlayer({
       src: [song.src],
       volume: volume / 100,
       html5: true,
+      onload: function () {
+        console.log("File đã load thành công!");
+      },
+      onloaderror: function (id, err) {
+        console.error("Lỗi khi tải file:", err);
+      },
       loop: isRepeat,
       onplay: () => {
         if (history[history.length - 1]?.id !== song.id) {

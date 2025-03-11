@@ -8,17 +8,63 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  server:
+  database:
+    image: mysql:8.0
+    container_name: music_database
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: music_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: 123456
+      MYSQL_ROOT_HOST: "%"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 3
+  backend:
     build:
       context: .
+      dockerfile: Dockerfile.backend
+    image: music_backend
+    user: root
+    container_name: music_backend
+    restart: always
     environment:
-      NODE_ENV: development
+      DB_HOST: database
+      DB_USER: user
+      DB_PASSWORD: 123456
+      DB_NAME: music_db
+      PORT: 7205
     ports:
-      - 4173:4173
+      - "7205:7205"
     volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-    command: ["npm", "run", "preview", "--", "--host"]
+      - backend_uploads:/app/uploads
+    command:
+      ["sh", "-c", "chmod -R 777 /app/uploads && node src/Functions/server.js"]
+    depends_on:
+      database:
+        condition: service_healthy
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    image: music_frontend
+    container_name: music_frontend
+    restart: always
+    ports:
+      - "8888:8888"
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:
+  backend_uploads:
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
 # start the database before your application. The `db-data` volume persists the

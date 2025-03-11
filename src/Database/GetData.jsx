@@ -15,23 +15,4 @@ async function getData() {
   }
 }
 
-export async function getPlaylists() {
-  let playlists = [
-    { id: 1, name: "Favourites" },
-    {
-      id: 2,
-      name: "My playlist",
-    },
-  ];
-  return playlists;
-}
-
-export async function getPlaylistSongs(playlistId) {
-  let playlistSongs = (await getData()).slice(0, 12, 2);
-  if (playlistId === 1) {
-    return playlistSongs;
-  } else {
-    return [];
-  }
-}
 export default getData;
